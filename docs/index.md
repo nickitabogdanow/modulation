@@ -3,17 +3,17 @@
 Добро пожаловать в документацию проекта классификации радиомодуляций. Здесь собраны материалы по теории сигналов, модуляциям, модему, датасетам, классическим и глубоким моделям, а также оценке качества.
 
 Основные разделы:
-- Теория для новичков: theory/THEORY_BEGINNER.md
-- Основы IQ (математика и анимации): theory/IQ_BASICS.md
-- Путеводитель по модуляциям: theory/MODULATIONS_GUIDE.md
+- Теория для новичков: [theory/THEORY_BEGINNER.md](theory/THEORY_BEGINNER.md)
+- Основы IQ (математика и анимации): [theory/IQ_BASICS.md](theory/IQ_BASICS.md)
+- Путеводитель по модуляциям: [theory/MODULATIONS_GUIDE.md](theory/MODULATIONS_GUIDE.md)
 - Учебный модем (код и демо): `modem.py`, `quick_modem_demo.py`
-- Классический ML (признаки и обучение): ML_GUIDE.md
-- Глубокое обучение (1D/2D CNN): DL_GUIDE.md
-- Датасеты и генерация данных: DATASETS.md
-- Оценка и сравнение (метрики/графики): EVALUATION.md
+- Классический ML (признаки и обучение): [ML_GUIDE.md](ML_GUIDE.md)
+- Глубокое обучение (1D/2D CNN): [DL_GUIDE.md](DL_GUIDE.md)
+- Датасеты и генерация данных: [DATASETS.md](DATASETS.md)
+- Оценка и сравнение (метрики/графики): [EVALUATION.md](EVALUATION.md)
 
 См. также:
-- Быстрая галерея изображений: ../README.md#быстрая-галерея
+- Быстрая галерея изображений: [../README.md#быстрая-галерея](../README.md#быстрая-галерея)
 - Генерация изображений/анимаций: `generate_figures.py`, `generate_animations.py`
 
 ---

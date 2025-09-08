@@ -19,7 +19,7 @@
 - Высшие порядки (кумулянты): `c20, c40, c42` с нормировкой.
 - IQ‑статистика: корреляции, отношение мощностей I/Q, и т.п.
 
-Файл: `features.py` (см. функции `instantaneous_features`, `spectral_features`, `cumulant_features`, `iq_stats`).
+Файл: `features.py` (см. функции `instantaneous_features`, `spectral_features`, `cumulants_complex`, `iq_stats`).
 
 ---
 
@@ -38,7 +38,11 @@
 - Поиск гиперпараметров: random search.
 - Метрики: Accuracy, F1 (macro/micro), матрица ошибок, усреднение по SNR‑бинам.
 
-Запуск: `python train_ml.py` (конфиг внутри файла, можно править поиск).
+Запуск:
+
+```bash
+python train_ml.py --train data/train_v1.npz --val data/val_v1.npz --test data/test_v1.npz --seed 42
+```
 
 ---
 

@@ -20,8 +20,8 @@
 
 ## Полезные материалы
 
-- Теория для новичков: [THEORY_BEGINNER.md](THEORY_BEGINNER.md)
-- Основы IQ c математикой и примерами: [IQ_BASICS.md](IQ_BASICS.md)
+- Теория для новичков: [docs/theory/THEORY_BEGINNER.md](docs/theory/THEORY_BEGINNER.md)
+- Основы IQ c математикой и примерами: [docs/theory/IQ_BASICS.md](docs/theory/IQ_BASICS.md)
 - Галерея изображений (генерируется `generate_figures.py`):
   - Созвездия: `img/constellations.png`
   - Блок‑схема получения I/Q: `img/iq_block_diagram.png`
@@ -29,8 +29,6 @@
   - Спектры примеров: `img/spectrum_examples.png`
   - Спектрограмма WBFM: `img/spectrogram_wbfm.png`
   - PSD (Welch) примеры: `img/psd_examples.png`
-  - BER‑кривые демо‑модема: `img/ber_curves.png`
-  - Снимки созвездий при SNR=12 дБ: `img/constellation_BPSK_12dB.png`, `img/constellation_QPSK_12dB.png`, `img/constellation_QAM16_12dB.png`
 
 ---
 
@@ -42,7 +40,7 @@
 
 [![Созвездия](img/constellations.png)](img/constellations.png)
 [![Искажения созвездия](img/constellation_impairments.png)](img/constellation_impairments.png)
-[![BER‑кривые](img/ber_curves.png)](img/ber_curves.png)
+<!-- Сгенерируйте BER‑кривые через quick_modem_demo.py, файл появится в img/ -->
 
 [![QPSK @12dB](img/constellation_QPSK_12dB.png)](img/constellation_QPSK_12dB.png)
 [![QAM16 @12dB](img/constellation_QAM16_12dB.png)](img/constellation_QAM16_12dB.png)

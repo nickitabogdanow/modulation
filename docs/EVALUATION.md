@@ -27,10 +27,10 @@
 ## 3. Процедура запуска
 
 ```bash
-python evaluate_compare.py
+python evaluate_compare.py --train data/train_v1.npz --val data/val_v1.npz --test data/test_v1.npz
 ```
 
-- Скрипт загрузит артефакты обучения, рассчитает метрики на тесте и построит графики/матрицы в `artifacts/` или `img/`.
+- Скрипт загрузит артефакты обучения, рассчитает метрики на тесте и сохранит графики/матрицы в `reports/`.
 
 ---
 
