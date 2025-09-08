@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# Virtual envs
+.venv/
+env/
+venv/
+
+# OS
+.DS_Store
+
+# Training artifacts
+artifacts/
+checkpoints_1d/
+data/
+*.npz
+
+# Jupyter / misc
+.ipynb_checkpoints/
+
+# Local configs
+*.local.json
