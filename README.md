@@ -49,9 +49,9 @@
 ## Документация
 
 - Обзор и оглавление: [docs/index.md](docs/index.md)
-- Теория для новичков: [THEORY_BEGINNER.md](THEORY_BEGINNER.md)
-- Основы IQ (математика, анимации): [IQ_BASICS.md](IQ_BASICS.md)
-- Путеводитель по модуляциям: [MODULATIONS_GUIDE.md](MODULATIONS_GUIDE.md)
+- Теория для новичков: [docs/theory/THEORY_BEGINNER.md](docs/theory/THEORY_BEGINNER.md)
+- Основы IQ (математика, анимации): [docs/theory/IQ_BASICS.md](docs/theory/IQ_BASICS.md)
+- Путеводитель по модуляциям: [docs/theory/MODULATIONS_GUIDE.md](docs/theory/MODULATIONS_GUIDE.md)
 - Классический ML (признаки и модели): [docs/ML_GUIDE.md](docs/ML_GUIDE.md)
 - Глубокое обучение (1D/2D CNN): [docs/DL_GUIDE.md](docs/DL_GUIDE.md)
 - Датасеты и генерация: [docs/DATASETS.md](docs/DATASETS.md)
