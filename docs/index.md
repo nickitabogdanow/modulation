@@ -24,6 +24,7 @@
 - Мини‑ликбез по математике: [MATH_PRIMER.md](MATH_PRIMER.md)
 - Сопоставление кода и теории: [CODE_TO_THEORY_MAP.md](CODE_TO_THEORY_MAP.md)
 - Сквозной пайплайн: [PIPELINE.md](PIPELINE.md)
+- Туториалы: [tutorials/01_quickstart.md](tutorials/01_quickstart.md), [tutorials/02_features_vs_dl.md](tutorials/02_features_vs_dl.md)
 
 ---
 
