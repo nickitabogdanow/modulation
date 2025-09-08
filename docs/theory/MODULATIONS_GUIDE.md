@@ -174,7 +174,8 @@ $$
 - Демодуляция:
 
 $$
-f_{\text{inst}}[n] = \frac{\operatorname{unwrap}(\arg x)[n] - \operatorname{unwrap}(\arg x)[n-1]}{2\pi}\,F_s,\quad \text{далее НЧ-фильтр и масштаб}. 
+f_{\text{inst}}[n] = \frac{\mathrm{unwrap}(\mathrm{arg}\, x[n]) - \mathrm{unwrap}(\mathrm{arg}\, x[n-1])}{2\pi} \cdot F_s,
+\quad \text{(далее НЧ-фильтр и масштаб)}
 $$
 - Особенности: очень характерная спектрограмма (см. `img/spectrogram_wbfm.png`).
 

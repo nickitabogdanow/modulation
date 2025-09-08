@@ -56,8 +56,8 @@ IQ на практике: упрощённая блок‑схема сняти�
 
 $$
 \begin{aligned}
-I(t) &= \operatorname{LPF}\{\, s(t)\cos(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\cos\varphi(t),\\
-Q(t) &= \operatorname{LPF}\{\, s(t)\sin(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\sin\varphi(t).
+I(t) &= \mathrm{LPF}\{\, s(t)\cos(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\cos\varphi(t),\\
+Q(t) &= \mathrm{LPF}\{\, s(t)\sin(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\sin\varphi(t).
 \end{aligned}
 $$
 
