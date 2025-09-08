@@ -45,8 +45,8 @@ $$
 
 $$
 \begin{aligned}
-I(t) &= \operatorname{LPF}\{\, s(t)\cos(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\cos\varphi(t),\\
-Q(t) &= \operatorname{LPF}\{\, s(t)\sin(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\sin\varphi(t).
+I(t) &= \mathrm{LPF}\{\, s(t)\cos(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\cos\varphi(t),\\
+Q(t) &= \mathrm{LPF}\{\, s(t)\sin(2\pi f_c t)\,\} \;\approx\; \tfrac{1}{2} A(t)\sin\varphi(t).
 \end{aligned}
 $$
 
@@ -60,7 +60,7 @@ $$
 Отсюда немедленно:
 
 $$
-A(t) = 2\,|x(t)|,\qquad \varphi(t) = \arg x(t) = \operatorname{atan2}\big(Q(t),\, I(t)\big).
+A(t) = 2\,|x(t)|,\qquad \varphi(t) = \mathrm{arg}\, x(t) = \mathrm{atan2}\big(Q(t),\, I(t)\big).
 $$
 
 То есть пара `(I, Q)` содержит полную информацию об амплитуде и фазе исходного сигнала.
@@ -133,7 +133,7 @@ $$
 
 ## 5. Мгновенная частота и фазовые производные
 
-Определим фазу $\varphi[n] = \operatorname{unwrap}(\arg x[n])$. Тогда **мгновенная частота**
+Определим фазу $\varphi[n] = \mathrm{unwrap}(\mathrm{arg}\, x[n])$. Тогда **мгновенная частота**
 
 $$
 f_{\text{inst}}[n] = \frac{\varphi[n]-\varphi[n-1]}{2\pi}\,F_s.

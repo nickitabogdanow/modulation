@@ -34,6 +34,10 @@
 
 ---
 
+📖 Онлайн‑документация: https://nickitabogdanow.github.io/modulation/
+
+---
+
 ## Быстрая галерея
 
 [![Созвездия](img/constellations.png)](img/constellations.png)
