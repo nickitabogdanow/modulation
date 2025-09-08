@@ -18,11 +18,20 @@
 
 ---
 
+## Для быстрого старта (рекомендуем)
+
+- Путеводитель для новичка: [BEGINNER_TOUR.md](BEGINNER_TOUR.md)
+- Мини‑ликбез по математике: [MATH_PRIMER.md](MATH_PRIMER.md)
+- Сопоставление кода и теории: [CODE_TO_THEORY_MAP.md](CODE_TO_THEORY_MAP.md)
+- Сквозной пайплайн: [PIPELINE.md](PIPELINE.md)
+
+---
+
 ## Теория
 
 - THEORY_BEGINNER.md — основы DSP и связи для AMC, наглядные примеры, фигуры (созвездия, спектры, спектрограммы), объяснения импульсной фильтрации и метрик.
-  - Ссылка: theory/THEORY_BEGINNER.md
+  - Ссылка: [theory/THEORY_BEGINNER.md](theory/THEORY_BEGINNER.md)
 - IQ_BASICS.md — подробная математика квадратурного детектирования, аналитический сигнал, геометрия IQ, а также GIF‑анимации CFO/фазовый шум/AWGN/IQ‑дисбаланс.
-  - Ссылка: theory/IQ_BASICS.md
+  - Ссылка: [theory/IQ_BASICS.md](theory/IQ_BASICS.md)
 - MODULATIONS_GUIDE.md — описания модуляций (PSK/QAM/FSK/AM/FM), интуиции по демодуляции, что смотреть на изображениях, мини‑примеры кода.
-  - Ссылка: theory/MODULATIONS_GUIDE.md
+  - Ссылка: [theory/MODULATIONS_GUIDE.md](theory/MODULATIONS_GUIDE.md)

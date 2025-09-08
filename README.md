@@ -51,6 +51,10 @@
 ## Документация
 
 - Обзор и оглавление: [docs/index.md](docs/index.md)
+- Для новичка: [docs/BEGINNER_TOUR.md](docs/BEGINNER_TOUR.md)
+- Мини‑математика: [docs/MATH_PRIMER.md](docs/MATH_PRIMER.md)
+- Карта код↔теория: [docs/CODE_TO_THEORY_MAP.md](docs/CODE_TO_THEORY_MAP.md)
+- Сквозной пайплайн: [docs/PIPELINE.md](docs/PIPELINE.md)
 - Теория для новичков: [docs/theory/THEORY_BEGINNER.md](docs/theory/THEORY_BEGINNER.md)
 - Основы IQ (математика, анимации): [docs/theory/IQ_BASICS.md](docs/theory/IQ_BASICS.md)
 - Путеводитель по модуляциям: [docs/theory/MODULATIONS_GUIDE.md](docs/theory/MODULATIONS_GUIDE.md)
