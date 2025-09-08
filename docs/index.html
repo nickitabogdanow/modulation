@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Классификация радиомодуляций — Документация</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; line-height: 1.6; }
+    h1 { margin-bottom: 0.25rem; }
+    .subtitle { color: #666; margin-top: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .card { border: 1px solid #eee; border-radius: 8px; padding: 1rem; background: #fff; }
+    .card h3 { margin-top: 0; }
+    a { color: #0366d6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+    .thumbs a img { width: 100%; height: auto; border: 1px solid #eee; border-radius: 6px; }
+    footer { margin-top: 2rem; color: #888; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Классификация радиомодуляций</h1>
+  <p class="subtitle">Документация и материалы</p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Оглавление (Markdown)</h3>
+      <p><a href="index.md">Перейти к оглавлению</a></p>
+    </div>
+    <div class="card">
+      <h3>Теория</h3>
+      <ul>
+        <li><a href="theory/THEORY_BEGINNER.md">Теория для новичков</a></li>
+        <li><a href="theory/IQ_BASICS.md">Основы IQ (математика, анимации)</a></li>
+        <li><a href="theory/MODULATIONS_GUIDE.md">Путеводитель по модуляциям</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>ML / DL</h3>
+      <ul>
+        <li><a href="ML_GUIDE.md">Классический ML: признаки и модели</a></li>
+        <li><a href="DL_GUIDE.md">Глубокое обучение: 1D/2D CNN</a></li>
+        <li><a href="DATASETS.md">Датасеты и генерация данных</a></li>
+        <li><a href="EVALUATION.md">Оценка и сравнение</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Код и демо</h3>
+      <ul>
+        <li><a href="../modem.py">modem.py</a> — учебный модем</li>
+        <li><a href="../quick_modem_demo.py">quick_modem_demo.py</a> — BER и созвездия</li>
+        <li><a href="../generate_figures.py">generate_figures.py</a>, <a href="../generate_animations.py">generate_animations.py</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Быстрая галерея</h3>
+  <div class="thumbs">
+    <a href="img/constellations.png"><img src="img/constellations.png" alt="Созвездия" /></a>
+    <a href="img/constellation_impairments.png"><img src="img/constellation_impairments.png" alt="Искажения созвездия" /></a>
+    <a href="img/ber_curves.png"><img src="img/ber_curves.png" alt="BER-кривые" /></a>
+    <a href="img/spectrogram_wbfm.png"><img src="img/spectrogram_wbfm.png" alt="Спектрограмма WBFM" /></a>
+  </div>
+
+  <footer>
+    © 2025. Документация проекта. Исходники: <a href="../README.md">README</a>
+  </footer>
+</body>
+</html>
