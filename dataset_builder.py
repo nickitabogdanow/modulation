@@ -3,8 +3,10 @@ import numpy as np
 from typing import Dict
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+import argparse
+import logging
 
-from config_and_utils import SignalConfig
+from config_and_utils import SignalConfig, set_seed, configure_logging
 from generators import synthesize_modulation
 from channel import pass_through_channel
 
@@ -18,8 +20,13 @@ def build_dataset(
     examples_per_class_per_snr: int = 500,
     use_multipath: bool = True,
     save_dir: str = "data",
-    tag: str = "v1"
+    tag: str = "v1",
+    seed: int = 42,
+    logger: logging.Logger = None
 ) -> Dict[str, str]:
+    if logger is None:
+        logger = logging.getLogger("modulation")
+    set_seed(seed)
     os.makedirs(save_dir, exist_ok=True)
     classes = list(cfg.classes)
     snrs = list(cfg.snr_db_grid)
@@ -28,7 +35,7 @@ def build_dataset(
     y_list = []
     snr_list = []
 
-    print("Generating raw examples...")
+    logger.info("Generating raw examples...")
     for mod_idx, mod in enumerate(tqdm(classes)):
         for snr_db in snrs:
             for _ in range(examples_per_class_per_snr):
@@ -64,6 +71,34 @@ def build_dataset(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Build modulation dataset")
+    parser.add_argument("--examples", type=int, default=200, help="Examples per class per SNR")
+    parser.add_argument("--use-multipath", action="store_true", help="Enable multipath channel")
+    parser.add_argument("--no-multipath", action="store_true", help="Disable multipath channel")
+    parser.add_argument("--save-dir", type=str, default="data", help="Output directory")
+    parser.add_argument("--tag", type=str, default="v1", help="Dataset tag suffix")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--log-dir", type=str, default="reports", help="Directory to store logs")
+    args = parser.parse_args()
+
+    use_multipath = True
+    if args.no_multipath:
+        use_multipath = False
+    elif args.use_multipath:
+        use_multipath = True
+
+    logger = configure_logging(log_dir=args.log_dir, file_prefix="build_dataset")
+    logger.info("Starting dataset build")
+    logger.info(f"examples_per_class_per_snr={args.examples} | use_multipath={use_multipath} | save_dir={args.save_dir} | tag={args.tag} | seed={args.seed}")
+
     cfg = SignalConfig()
-    paths = build_dataset(cfg, examples_per_class_per_snr=200, use_multipath=True, save_dir="data", tag="v1")
-    print(paths)
+    paths = build_dataset(
+        cfg,
+        examples_per_class_per_snr=args.examples,
+        use_multipath=use_multipath,
+        save_dir=args.save_dir,
+        tag=args.tag,
+        seed=args.seed,
+        logger=logger,
+    )
+    logger.info(paths)
