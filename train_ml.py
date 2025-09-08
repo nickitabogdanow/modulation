@@ -1,5 +1,7 @@
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from typing import List
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report
@@ -7,6 +9,8 @@ from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from joblib import dump as joblib_dump
+import argparse
+import logging
 
 try:
     from lightgbm import LGBMClassifier
@@ -21,11 +25,11 @@ except Exception:
     HAS_XGB = False
 
 from features_run import build_feature_matrices
-from config_and_utils import SignalConfig
+from config_and_utils import SignalConfig, configure_logging, set_seed
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 
-def plot_confusion(cm: np.ndarray, labels: List[str], title: str):
+def plot_confusion(cm: np.ndarray, labels: List[str], title: str, out_path: str = None):
     plt.figure(figsize=(6, 5))
     plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
     plt.title(title)
@@ -36,10 +40,16 @@ def plot_confusion(cm: np.ndarray, labels: List[str], title: str):
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
-    plt.show()
+    if out_path:
+        plt.savefig(out_path, dpi=150)
+    plt.close()
 
 
-def train_and_eval_ml(train_path: str, val_path: str, test_path: str, fs: float):
+def train_and_eval_ml(train_path: str, val_path: str, test_path: str, fs: float, reports_dir: str = "reports", seed: int = 42, logger: logging.Logger = None):
+    if logger is None:
+        logger = logging.getLogger("modulation")
+    set_seed(seed)
+    os.makedirs(reports_dir, exist_ok=True)
     (F_tr, y_tr), (F_va, y_va), (F_te, y_te), feat_names, labels = build_feature_matrices(
         train_path, val_path, test_path, fs
     )
@@ -96,36 +106,46 @@ def train_and_eval_ml(train_path: str, val_path: str, test_path: str, fs: float)
         n_jobs=-1
     )
 
+    logger.info("Starting hyperparameter search (RandomizedSearchCV)")
     search.fit(F_tr, y_tr)
     best_model = search.best_estimator_
 
-    print("Best params:", search.best_params_)
-    print("CV best score:", search.best_score_)
+    logger.info(f"Best params: {search.best_params_}")
+    logger.info(f"CV best score: {search.best_score_}")
 
     yv_pred = best_model.predict(F_va)
-    print("Validation:")
-    print(f"Acc={accuracy_score(y_va, yv_pred):.4f} | F1-macro={f1_score(y_va, yv_pred, average='macro'):.4f} | F1-micro={f1_score(y_va, yv_pred, average='micro'):.4f}")
-    print(classification_report(y_va, yv_pred, target_names=list(labels)))
+    logger.info("Validation:")
+    logger.info(f"Acc={accuracy_score(y_va, yv_pred):.4f} | F1-macro={f1_score(y_va, yv_pred, average='macro'):.4f} | F1-micro={f1_score(y_va, yv_pred, average='micro'):.4f}")
+    with open(os.path.join(reports_dir, "ml_validation_report.txt"), "w", encoding="utf-8") as f:
+        f.write(classification_report(y_va, yv_pred, target_names=list(labels)))
 
     yt_pred = best_model.predict(F_te)
-    print("Test:")
-    print(f"Acc={accuracy_score(y_te, yt_pred):.4f} | F1-macro={f1_score(y_te, yt_pred, average='macro'):.4f} | F1-micro={f1_score(y_te, yt_pred, average='micro'):.4f}")
-    print(classification_report(y_te, yt_pred, target_names=list(labels)))
+    logger.info("Test:")
+    logger.info(f"Acc={accuracy_score(y_te, yt_pred):.4f} | F1-macro={f1_score(y_te, yt_pred, average='macro'):.4f} | F1-micro={f1_score(y_te, yt_pred, average='micro'):.4f}")
+    with open(os.path.join(reports_dir, "ml_test_report.txt"), "w", encoding="utf-8") as f:
+        f.write(classification_report(y_te, yt_pred, target_names=list(labels)))
 
     cm_te = confusion_matrix(y_te, yt_pred)
-    plot_confusion(cm_te, list(labels), title="Confusion Matrix (Test)")
+    plot_confusion(cm_te, list(labels), title="Confusion Matrix (Test)", out_path=os.path.join(reports_dir, "ml_confusion_test.png"))
 
     os.makedirs("artifacts", exist_ok=True)
     joblib_dump_path = "artifacts/ml_best.joblib"
     joblib_dump(best_model, joblib_dump_path)
-    print("Saved ML model to:", joblib_dump_path)
+    logger.info("Saved ML model to: %s", joblib_dump_path)
 
     return best_model
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Train and evaluate ML model on hand-crafted features")
+    parser.add_argument("--train", type=str, default="data/train_v1.npz")
+    parser.add_argument("--val", type=str, default="data/val_v1.npz")
+    parser.add_argument("--test", type=str, default="data/test_v1.npz")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--reports", type=str, default="reports")
+    parser.add_argument("--log-dir", type=str, default="reports")
+    args = parser.parse_args()
+
+    logger = configure_logging(log_dir=args.log_dir, file_prefix="train_ml")
     cfg = SignalConfig()
-    train_path = "data/train_v1.npz"
-    val_path   = "data/val_v1.npz"
-    test_path  = "data/test_v1.npz"
-    _ = train_and_eval_ml(train_path, val_path, test_path, fs=cfg.fs)
+    _ = train_and_eval_ml(args.train, args.val, args.test, fs=cfg.fs, reports_dir=args.reports, seed=args.seed, logger=logger)

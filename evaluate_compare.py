@@ -1,22 +1,26 @@
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from typing import Dict, List, Tuple
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+import argparse
+import logging
 
 import tensorflow as tf
 from joblib import load as joblib_load
 
 from features_run import build_feature_matrices
 from dl_prep import load_npz, make_dataset_1d
-from config_and_utils import SignalConfig
+from config_and_utils import SignalConfig, configure_logging, set_seed
 
 
 def evaluate_ml_per_snr(train_path: str, val_path: str, test_path: str, fs: float, ml_model_path: str):
     (F_tr, y_tr), (F_va, y_va), (F_te, y_te), feat_names, labels = build_feature_matrices(
         train_path, val_path, test_path, fs
     )
-    test = np.load(test_path, allow_pickle=True)
+    test = np.load(test_path, allow_pickle=False)
     snr_te = test["snr_db"]
 
     clf = joblib_load(ml_model_path)
@@ -76,7 +80,8 @@ def evaluate_dl_per_snr(test_path: str, dl_model_path: str, num_classes: int, ba
 
 def plot_metrics_vs_snr(per_snr_ml: Dict[float, Tuple[float, float, float]],
                         per_snr_dl: Dict[float, Tuple[float, float, float]],
-                        title_prefix: str = ""):
+                        title_prefix: str = "",
+                        out_dir: str = "reports"):
     snrs = sorted(list(set(list(per_snr_ml.keys()) + list(per_snr_dl.keys()))))
 
     acc_ml = [per_snr_ml[s][0] if s in per_snr_ml else np.nan for s in snrs]
@@ -93,7 +98,9 @@ def plot_metrics_vs_snr(per_snr_ml: Dict[float, Tuple[float, float, float]],
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    os.makedirs(out_dir, exist_ok=True)
+    plt.savefig(os.path.join(out_dir, "ml_vs_dl_accuracy_vs_snr.png"), dpi=150)
+    plt.close()
 
     plt.figure(figsize=(8,4))
     plt.plot(snrs, f1m_ml, "o--", label="ML F1-macro")
@@ -104,10 +111,11 @@ def plot_metrics_vs_snr(per_snr_ml: Dict[float, Tuple[float, float, float]],
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    plt.savefig(os.path.join(out_dir, "ml_vs_dl_f1macro_vs_snr.png"), dpi=150)
+    plt.close()
 
 
-def plot_confusions_by_snr(y_true, y_pred, snr_arr, class_names, chosen_snrs: List[float], suptitle: str):
+def plot_confusions_by_snr(y_true, y_pred, snr_arr, class_names, chosen_snrs: List[float], suptitle: str, out_path: str):
     cols = len(chosen_snrs)
     plt.figure(figsize=(5*cols, 4))
     for i, s in enumerate(chosen_snrs):
@@ -122,30 +130,42 @@ def plot_confusions_by_snr(y_true, y_pred, snr_arr, class_names, chosen_snrs: Li
         plt.yticks(ticks, class_names, fontsize=8)
         plt.tight_layout()
     plt.suptitle(suptitle)
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150)
+    plt.close()
 
 
 if __name__ == "__main__":
-    cfg = SignalConfig()
-    train_path = "data/train_v1.npz"
-    val_path   = "data/val_v1.npz"
-    test_path  = "data/test_v1.npz"
+    parser = argparse.ArgumentParser(description="Compare ML and DL models across SNR")
+    parser.add_argument("--train", type=str, default="data/train_v1.npz")
+    parser.add_argument("--val", type=str, default="data/val_v1.npz")
+    parser.add_argument("--test", type=str, default="data/test_v1.npz")
+    parser.add_argument("--ml-model", type=str, default="artifacts/ml_best.joblib")
+    parser.add_argument("--dl-model", type=str, default="checkpoints_1d/best.keras")
+    parser.add_argument("--reports", type=str, default="reports")
+    parser.add_argument("--log-dir", type=str, default="reports")
+    parser.add_argument("--seed", type=int, default=42)
+    args = parser.parse_args()
 
-    ml_model_path = "artifacts/ml_best.joblib"
-    dl_model_path = "checkpoints_1d/best.keras"
+    logger = configure_logging(log_dir=args.log_dir, file_prefix="evaluate")
+    set_seed(args.seed)
+    cfg = SignalConfig()
+    train_path = args.train
+    val_path   = args.val
+    test_path  = args.test
 
     per_snr_ml, overall_ml, labels, y_te_ml, y_pred_ml = evaluate_ml_per_snr(
-        train_path, val_path, test_path, fs=cfg.fs, ml_model_path=ml_model_path
+        train_path, val_path, test_path, fs=cfg.fs, ml_model_path=args.ml_model
     )
-    print("ML overall:", overall_ml)
+    logger.info("ML overall: %s", overall_ml)
 
     num_classes = len(labels)
     per_snr_dl, overall_dl, labels_dl, y_te_dl, y_pred_dl = evaluate_dl_per_snr(
-        test_path, dl_model_path, num_classes=num_classes
+        test_path, args.dl_model, num_classes=num_classes
     )
-    print("DL overall:", overall_dl)
+    logger.info("DL overall: %s", overall_dl)
 
-    plot_metrics_vs_snr(per_snr_ml, per_snr_dl, title_prefix="ML vs DL")
+    plot_metrics_vs_snr(per_snr_ml, per_snr_dl, title_prefix="ML vs DL", out_dir=args.reports)
 
     snrs_all = sorted(list(per_snr_ml.keys()))
     if len(snrs_all) >= 3:
@@ -155,9 +175,9 @@ if __name__ == "__main__":
     else:
         chosen = []
 
-    test_npz = np.load(test_path, allow_pickle=True)
+    test_npz = np.load(test_path, allow_pickle=False)
     snr_te = test_npz["snr_db"]
 
     if chosen:
-        plot_confusions_by_snr(y_te_ml, y_pred_ml, snr_te, list(labels), chosen, suptitle="ML confusions by SNR")
-        plot_confusions_by_snr(y_te_dl, y_pred_dl, snr_te, list(labels), chosen, suptitle="DL confusions by SNR")
+        plot_confusions_by_snr(y_te_ml, y_pred_ml, snr_te, list(labels), chosen, suptitle="ML confusions by SNR", out_path=os.path.join(args.reports, "ml_confusions_by_snr.png"))
+        plot_confusions_by_snr(y_te_dl, y_pred_dl, snr_te, list(labels), chosen, suptitle="DL confusions by SNR", out_path=os.path.join(args.reports, "dl_confusions_by_snr.png"))

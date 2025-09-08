@@ -7,7 +7,7 @@ AUTOTUNE = tf.data.AUTOTUNE
 
 
 def load_npz(path: str) -> Dict[str, np.ndarray]:
-    with np.load(path, allow_pickle=True) as data:
+    with np.load(path, allow_pickle=False) as data:
         return {k: data[k] for k in data.files}
 
 

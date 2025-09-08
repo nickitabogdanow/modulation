@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 from typing import Tuple
 import numpy as np
+import os
+import random
+import logging
+from functools import lru_cache
 
 
 def db2lin(db: float) -> float:
@@ -9,6 +13,72 @@ def db2lin(db: float) -> float:
 
 def lin2db(lin: float) -> float:
     return 10 * np.log10(np.maximum(lin, 1e-12))
+
+
+def set_seed(seed: int = 42, deterministic_tf: bool = True) -> None:
+    """Set seeds for Python, NumPy, and TensorFlow (if available).
+
+    Parameters
+    ----------
+    seed : int
+        Random seed value.
+    deterministic_tf : bool
+        Whether to enable deterministic operations in TensorFlow when possible.
+    """
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+
+    try:
+        import tensorflow as tf  # Lazy import to avoid hard dependency
+        tf.random.set_seed(seed)
+        if deterministic_tf:
+            os.environ.setdefault("TF_DETERMINISTIC_OPS", "1")
+            try:
+                # TF 2.13+
+                tf.config.experimental.enable_op_determinism(True)
+            except Exception:
+                pass
+        # Reduce noisy TF logs by default
+        os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+    except Exception:
+        # TensorFlow not installed or determinism not available; ignore
+        pass
+
+
+def configure_logging(log_dir: str = "reports", file_prefix: str = "run", level: int = logging.INFO) -> logging.Logger:
+    """Configure a root project logger that logs to both stdout and a rotating file.
+
+    Parameters
+    ----------
+    log_dir : str
+        Directory to store log files.
+    file_prefix : str
+        Prefix for the log file name.
+    level : int
+        Logging level, e.g., logging.INFO.
+    """
+    os.makedirs(log_dir, exist_ok=True)
+    logger = logging.getLogger("modulation")
+    logger.setLevel(level)
+
+    if not logger.handlers:
+        formatter = logging.Formatter(fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(level)
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
+
+        from datetime import datetime
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_path = os.path.join(log_dir, f"{file_prefix}_{ts}.log")
+        file_handler = logging.FileHandler(file_path)
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    return logger
 
 
 @dataclass
@@ -38,6 +108,7 @@ class SignalConfig:
     )
 
 
+@lru_cache(maxsize=64)
 def rrc_filter(num_taps: int, beta: float, sps: int) -> np.ndarray:
     t = (np.arange(num_taps) - (num_taps - 1) / 2) / sps
     eps = 1e-10
@@ -48,6 +119,7 @@ def rrc_filter(num_taps: int, beta: float, sps: int) -> np.ndarray:
     return h
 
 
+@lru_cache(maxsize=64)
 def gaussian_pulse(sps: int, bt: float, span_symbols: int = 4) -> np.ndarray:
     t = np.linspace(-span_symbols/2, span_symbols/2, span_symbols * sps)
     alpha = np.sqrt(np.log(2)) / (bt)
