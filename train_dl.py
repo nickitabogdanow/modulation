@@ -8,7 +8,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 import argparse
 import logging
 
-from config_and_utils import SignalConfig, configure_logging, set_seed
+from config_and_utils import SignalConfig, configure_logging, set_seed, make_signal_config_from_yaml
 from dl_prep import make_dataset_1d, make_dataset_2d_spectrogram, load_npz
 from models_dl import build_cnn1d, build_cnn2d_spectrogram
 
@@ -152,10 +152,19 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--log-dir", type=str, default="reports")
     parser.add_argument("--mode", type=str, choices=["1d", "2d"], default="1d")
+    parser.add_argument("--mixed-precision", action="store_true", help="Enable TF mixed precision policy (float16)")
+    parser.add_argument("--config", type=str, default=None, help="Path to YAML SignalConfig override")
     args = parser.parse_args()
 
     logger = configure_logging(log_dir=args.log_dir, file_prefix="train_dl")
-    cfg = SignalConfig()
+    if args.mixed_precision:
+        try:
+            from tensorflow.keras import mixed_precision
+            mixed_precision.set_global_policy('mixed_float16')
+            logger.info("Enabled mixed precision: mixed_float16")
+        except Exception as e:
+            logger.warning("Failed to enable mixed precision: %s", e)
+    cfg = make_signal_config_from_yaml(args.config) if args.config else SignalConfig()
     if args.mode == "1d":
         _ = train_1d(args.train, args.val, args.test, cfg, batch_size=args.batch_size, epochs=args.epochs, out_dir=args.out, reports_dir=args.reports, seed=args.seed, logger=logger)
     else:

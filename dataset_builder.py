@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import argparse
 import logging
 
-from config_and_utils import SignalConfig, set_seed, configure_logging
+from config_and_utils import SignalConfig, set_seed, configure_logging, make_signal_config_from_yaml
 from generators import synthesize_modulation
 from channel import pass_through_channel
 
@@ -73,6 +73,7 @@ def build_dataset(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Build modulation dataset")
     parser.add_argument("--examples", type=int, default=200, help="Examples per class per SNR")
+    parser.add_argument("--config", type=str, default=None, help="Path to YAML config to override SignalConfig")
     parser.add_argument("--use-multipath", action="store_true", help="Enable multipath channel")
     parser.add_argument("--no-multipath", action="store_true", help="Disable multipath channel")
     parser.add_argument("--save-dir", type=str, default="data", help="Output directory")
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     logger.info("Starting dataset build")
     logger.info(f"examples_per_class_per_snr={args.examples} | use_multipath={use_multipath} | save_dir={args.save_dir} | tag={args.tag} | seed={args.seed}")
 
-    cfg = SignalConfig()
+    cfg = make_signal_config_from_yaml(args.config) if args.config else SignalConfig()
     paths = build_dataset(
         cfg,
         examples_per_class_per_snr=args.examples,

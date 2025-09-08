@@ -25,7 +25,7 @@ except Exception:
     HAS_XGB = False
 
 from features_run import build_feature_matrices
-from config_and_utils import SignalConfig, configure_logging, set_seed
+from config_and_utils import SignalConfig, configure_logging, set_seed, make_signal_config_from_yaml
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 
@@ -142,10 +142,11 @@ if __name__ == "__main__":
     parser.add_argument("--val", type=str, default="data/val_v1.npz")
     parser.add_argument("--test", type=str, default="data/test_v1.npz")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--config", type=str, default=None, help="Path to YAML SignalConfig override")
     parser.add_argument("--reports", type=str, default="reports")
     parser.add_argument("--log-dir", type=str, default="reports")
     args = parser.parse_args()
 
     logger = configure_logging(log_dir=args.log_dir, file_prefix="train_ml")
-    cfg = SignalConfig()
+    cfg = make_signal_config_from_yaml(args.config) if args.config else SignalConfig()
     _ = train_and_eval_ml(args.train, args.val, args.test, fs=cfg.fs, reports_dir=args.reports, seed=args.seed, logger=logger)

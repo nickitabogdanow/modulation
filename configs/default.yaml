@@ -1,0 +1,15 @@
+fs: 1000000.0
+sps: 8
+window_size: 4096
+snr_db_grid: [-6, 0, 6, 10, 14, 18, 20]
+cfo_ppm_range: [-20000.0, 20000.0]
+timing_offset_range: [-0.3, 0.3]
+iq_amp_imbalance_db_range: [-1.0, 1.0]
+iq_phase_imbalance_deg_range: [-5.0, 5.0]
+phase_noise_std_range: [0.0, 0.01]
+fsk_h: 0.5
+gaussian_bt: 0.5
+am_mod_index: 0.5
+fm_deviation_hz: 75000.0
+classes: ["BPSK", "QPSK", "PSK8", "QAM16", "QAM64", "CPFSK", "GFSK", "AM-DSB", "AM-SSB", "WBFM"]
+

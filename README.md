@@ -76,7 +76,7 @@ pip install -r requirements.txt
 
 Генерация датасета (настройки внутри `dataset_builder.py` и `config_and_utils.py`):
 ```bash
-python dataset_builder.py
+python dataset_builder.py --examples 200 --use-multipath --save-dir data --tag v1 --seed 42
 ```
 В результате появятся файлы:
 - `data/train_v1.npz`
@@ -85,19 +85,19 @@ python dataset_builder.py
 
 Классический ML (обучение и оценка на "ручных" признаках):
 ```bash
-python train_ml.py
+python train_ml.py --train data/train_v1.npz --val data/val_v1.npz --test data/test_v1.npz --seed 42
 ```
 Скрипт сохранит лучшую модель в `artifacts/ml_best.joblib` и выведет метрики/матрицы ошибок.
 
 Глубокое обучение (1D-CNN на IQ):
 ```bash
-python train_dl.py
+python train_dl.py --mode 1d --train data/train_v1.npz --val data/val_v1.npz --test data/test_v1.npz --epochs 30 --batch-size 128 --seed 42
 ```
 Скрипт сохранит лучший чекпойнт в `checkpoints_1d/best.keras` и выведет метрики/матрицы ошибок.
 
 Сравнение ML vs DL по SNR:
 ```bash
-python evaluate_compare.py
+python evaluate_compare.py --train data/train_v1.npz --val data/val_v1.npz --test data/test_v1.npz
 ```
 Построит графики Accuracy/F1 vs SNR и матрицы ошибок по выбранным SNR.
 

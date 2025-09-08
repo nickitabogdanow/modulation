@@ -29,7 +29,7 @@ def build_cnn1d(input_len: int, num_channels: int, num_classes: int) -> tf.keras
     model = models.Model(inp, out, name="cnn1d_iq")
     model.compile(
         optimizer=tf.keras.optimizers.Adam(1e-3),
-        loss="categorical_crossentropy",
+        loss="sparse_categorical_crossentropy",
         metrics=["accuracy"]
     )
     return model
@@ -61,7 +61,7 @@ def build_cnn2d_spectrogram(input_shape, num_classes: int) -> tf.keras.Model:
     model = models.Model(inp, out, name="cnn2d_spec")
     model.compile(
         optimizer=tf.keras.optimizers.Adam(1e-3),
-        loss="categorical_crossentropy",
+        loss="sparse_categorical_crossentropy",
         metrics=["accuracy"]
     )
     return model

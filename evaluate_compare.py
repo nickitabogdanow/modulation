@@ -13,7 +13,7 @@ from joblib import load as joblib_load
 
 from features_run import build_feature_matrices
 from dl_prep import load_npz, make_dataset_1d
-from config_and_utils import SignalConfig, configure_logging, set_seed
+from config_and_utils import SignalConfig, configure_logging, set_seed, make_signal_config_from_yaml
 
 
 def evaluate_ml_per_snr(train_path: str, val_path: str, test_path: str, fs: float, ml_model_path: str):
@@ -145,11 +145,12 @@ if __name__ == "__main__":
     parser.add_argument("--reports", type=str, default="reports")
     parser.add_argument("--log-dir", type=str, default="reports")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--config", type=str, default=None, help="Path to YAML SignalConfig override")
     args = parser.parse_args()
 
     logger = configure_logging(log_dir=args.log_dir, file_prefix="evaluate")
     set_seed(args.seed)
-    cfg = SignalConfig()
+    cfg = make_signal_config_from_yaml(args.config) if args.config else SignalConfig()
     train_path = args.train
     val_path   = args.val
     test_path  = args.test

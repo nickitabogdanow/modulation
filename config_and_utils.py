@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Any, Dict
 import numpy as np
 import os
 import random
 import logging
 from functools import lru_cache
+import yaml
 
 
 def db2lin(db: float) -> float:
@@ -108,6 +109,21 @@ class SignalConfig:
     )
 
 
+def load_config_from_yaml(path: str) -> Dict[str, Any]:
+    with open(path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    return data if data is not None else {}
+
+
+def make_signal_config_from_yaml(path: str) -> SignalConfig:
+    raw = load_config_from_yaml(path)
+    # Only set known fields
+    fields = {f: raw.get(f, getattr(SignalConfig, f)) for f in SignalConfig.__annotations__.keys()}
+    # Convert lists to tuples for tuple-typed fields
+    for key in ["snr_db_grid", "classes"]:
+        if key in fields and isinstance(fields[key], list):
+            fields[key] = tuple(fields[key])
+    return SignalConfig(**fields)
 @lru_cache(maxsize=64)
 def rrc_filter(num_taps: int, beta: float, sps: int) -> np.ndarray:
     t = (np.arange(num_taps) - (num_taps - 1) / 2) / sps
