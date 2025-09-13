@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" id="viewportMeta">
+    <title>AlfaCTF Mermaid</title>
+    <script>
+        (function() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                           window.innerWidth < 1024;
+            
+            if (isMobile && localStorage.getItem('userWantsPlayFromMobile') === 'true') {
+                const viewportMeta = document.getElementById('viewportMeta');
+                viewportMeta.setAttribute('content', 'width=900');
+            }
+        })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #001122;
+            color: #00ff00;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+        }
+
+        #inventory {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            max-width: 70%;
+        }
+
+        .letter {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #00ff00;
+            background: #001122;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #00ff00;
+        }
+
+        .letter.collected {
+            background: #00ff00;
+            color: #000;
+        }
+
+        #score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        #time {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        #inventory-container {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toggle-btn:hover {
+            background: #00aa00;
+        }
+        
+        #inventory-container.collapsed {
+            max-height: 30px;
+            overflow: hidden;
+        }
+        
+        #inventory-container.collapsed #inventory {
+            opacity: 0;
+        }
+
+        #gameCanvas {
+            border: 2px solid #00ff00;
+            background: #001122;
+            display: block;
+            margin: 0 auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .screen-content {
+            text-align: center;
+            padding: 20px;
+            border: 3px solid #00ff00;
+            background: #001122;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #00ff00;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #00aa00;
+        }
+
+        .instructions {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: #008800;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #001122;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .flag {
+            font-size: 20px;
+            color: #ffff00;
+            margin: 20px 0;
+            word-break: break-all;
+            font-weight: bold;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #00ff00;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ff00;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .control-btn:active {
+            background: #00ff00;
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            #ui {
+                padding: 5px;
+            }
+            
+            .letter {
+                width: 25px;
+                height: 25px;
+                font-size: 14px;
+            }
+            
+            #gameCanvas {
+                width: 100vw !important;
+                height: 100vh !important;
+                max-width: none !important;
+                max-height: none !important;
+            }
+            
+            #inventory-container {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                background: rgba(0, 0, 0, 0.8);
+                border: 2px solid #00ff00;
+                border-radius: 10px;
+                padding: 10px;
+                z-index: 100;
+            }
+            
+            #inventory-container.collapsed {
+                max-height: 40px;
+                min-height: 40px;
+            }
+            
+                    .toggle-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            top: -15px;
+            right: -15px;
+        }
+        
+
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="ui">
+            <div id="inventory-container">
+                <div id="inventory"></div>
+                <button id="toggleInventory" class="toggle-btn">▼</button>
+            </div>
+            <div id="score">Score: 0</div>
+            <div id="time">Time: 0s</div>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+        
+
+        
+        <div id="controls">
+            <div class="control-btn" id="leftBtn">↑</div>
+            <div class="control-btn" id="rightBtn">↓</div>
+        </div>
+        
+        <div id="startScreen">
+            <div class="screen-content">
+                <div class="title">🌊 AlfaCTF Mermaid 🌊</div>
+                <div class="subtitle">Держись подальше от русалки и собери флаг!</div>
+                <div class="instructions">
+                    🎮 Геймплей:<br>
+                    • Перемещайся по линиям и собирай жёлтые буквы флага<br>
+                    • Можно импользовапть стрелки и W/S<br>
+                    • Не дай русалке тебя притянуть фиолетовыми песнями!<br>
+                    • Обязательно собери флаг целиком!
+                </div>
+                <button class="btn" id="startBtn">Начать игру</button>
+            </div>
+        </div>
+        
+        <div id="gameOverScreen">
+            <div class="screen-content">
+                <div class="title" id="gameOverTitle">Игра окончена</div>
+                <div class="subtitle" id="gameOverSubtitle"></div>
+                <div class="flag" id="flagDisplay"></div>
+                <button class="btn" id="restartBtn">Играть снова</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
